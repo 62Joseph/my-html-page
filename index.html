@@ -6,7 +6,6 @@
 <title>Exam UI • Panels</title>
 <style>
   :root{
-    /* page + shared */
     --page-bg:#132845;
     --text:#eaf0ff;
     --accent:#0376e0;
@@ -15,15 +14,15 @@
     --warn:#ff5c5c;
     --shadow:0 8px 20px rgba(0,0,0,.15);
 
-    /* section backgrounds you can control */
-    --top-bg:#0f223a;    /* خلفية القسم العلوي */
-    --left-bg:#0f2747;   /* خلفية العمود الأيسر */
-    --main-bg:#0b1a2b;   /* خلفية المستطيل الكبير (منطقة الأسئلة) */
-    --bottom-bg:#0e1c31; /* خلفية الشريط السفلي */
+    /* editable section backgrounds */
+    --top-bg:#0f223a;    /* header rectangle */
+    --left-bg:#0f2747;   /* left column rectangle */
+    --main-bg:#0b1a2b;   /* big middle rectangle */
+    --bottom-bg:#0e1c31; /* bottom dock rectangle */
 
-    /* inside the main question panel */
-    --card:#212b44;      /* لون البطاقة الداخلية */
-    --option-bg:#6274a6; /* خلفية كل خيار */
+    /* inside main panel */
+    --card:#212b44;      /* question card */
+    --option-bg:#6274a6; /* option item background */
   }
 
   html,body{height:100%}
@@ -31,25 +30,22 @@
     margin:0;background:var(--page-bg);color:var(--text);
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
     -webkit-font-smoothing:antialiased; line-height:1.4;
-    overflow:hidden; /* لا يوجد شريط تمرير عام */
+    overflow:hidden; /* fixed page; only sidebar scrolls */
   }
+
   .app{
-    height:100vh; max-width:1080px; margin:0 auto;
+    height:100vh; width:100%;
     display:grid; grid-template-rows:auto 1fr auto;
     gap:12px; padding:12px 12px 90px; box-sizing:border-box;
   }
 
-  /* =================== Section: TOP (single rectangle) =================== */
+  /* ===== TOP RECTANGLE ===== */
   .section-top{
     background:var(--top-bg);
-    border:1px solid #1a3557;
-    border-radius:12px;
-    box-shadow:var(--shadow);
-    padding:12px;
+    border:1px solid #1a3557; border-radius:12px;
+    box-shadow:var(--shadow); padding:12px;
   }
-  .topbar{
-    display:grid;grid-template-columns:48px 1fr 90px;align-items:center;gap:8px;margin-bottom:12px
-  }
+  .topbar{display:grid;grid-template-columns:48px 1fr 90px;align-items:center;gap:8px;margin-bottom:12px}
   .clock-badge{width:40px;height:40px;border-radius:999px;border:3px solid #89a6c7;display:grid;place-items:center}
   .clock-badge::before{content:"";width:14px;height:14px;border:2px solid #89a6c7;border-radius:999px}
   .tabs{display:flex;justify-content:center;gap:10px}
@@ -61,7 +57,7 @@
   .timer .txt{font-weight:700}
 
   .stats-wrap{display:grid;gap:10px}
-  .name{background:#2b4363;padding:10px 12px;border-radius:8px;font-weight:600}
+  .name{background:#2b4363;padding:10px 12px;border-radius:8px;font-weight:600;display:inline-block;text-align:left}
   .row{display:grid;grid-template-columns:110px 1fr 56px;align-items:center;gap:10px}
   .bar{height:10px;background:#0d1f37;border-radius:6px;position:relative;overflow:hidden;border:1px solid #274567}
   .bar>span{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#58d76f,#3ed26b)}
@@ -69,45 +65,34 @@
   .chip{background:#284260;border-radius:8px;padding:10px;border:1px solid #355173}
   .chip .bar{height:8px}
 
-  /* =================== Middle area: LEFT panel + MAIN panel =================== */
-  .middle{
-    display:grid;grid-template-columns:76px 1fr;gap:12px;min-height:0;
-  }
+  /* ===== MIDDLE: LEFT + MAIN ===== */
+  .middle{display:grid;grid-template-columns:76px 1fr;gap:12px;min-height:0}
 
-  /* LEFT PANEL (single rectangle) */
+  /* left rectangle */
   .left-panel{
     background:var(--left-bg);
-    border:1px solid #1f3d67;
-    border-radius:12px;
-    padding:8px 6px;
-    box-shadow:var(--shadow);
-    display:flex;flex-direction:column;min-height:0;
+    border:1px solid #1f3d67;border-radius:12px;box-shadow:var(--shadow);
+    padding:8px 6px;display:flex;flex-direction:column;min-height:0;
   }
-  .side{
-    overflow:auto; display:flex;flex-direction:column;gap:8px;min-height:0;
-  }
+  .side{overflow:auto;display:flex;flex-direction:column;gap:8px;min-height:0}
   .idx{
     display:grid;place-items:center;height:36px;width:56px;
     background:var(--accent);color:#fff;font-weight:800;
-    border:1px solid #2a7bff;border-radius:8px;
-    cursor:pointer;user-select:none;margin-inline:auto
+    border:1px solid #2a7bff;border-radius:8px;cursor:pointer;user-select:none;margin-inline:auto
   }
   .idx.active{outline:3px solid #a8d1ff66}
   .idx.answered{background:var(--green);border-color:#7ae3a3}
   .idx.flag{background:var(--flag);border-color:#ffd29b;color:#1e232b}
   .idx.skip{background:#ff7676;border-color:#ff9aa0}
 
-  /* MAIN PANEL (single rectangle) */
+  /* main rectangle */
   .main-panel{
     background:var(--main-bg);
-    border:1px solid #1a3557;
-    border-radius:12px;
-    box-shadow:var(--shadow);
-    padding:12px;
-    overflow:hidden; display:flex;flex-direction:column;
+    border:1px solid #1a3557;border-radius:12px;box-shadow:var(--shadow);
+    padding:12px;overflow:hidden;display:flex;flex-direction:column;
   }
 
-  /* Question card inside MAIN PANEL */
+  /* question card with options */
   .card{
     background:var(--card); color:#e7eefc;
     border:1px solid #1d2740; border-radius:12px;
@@ -116,30 +101,26 @@
   .qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
   .qtitle{font-weight:800;color:#bcd6ff}
   .marks{color:#5aa0ff;font-weight:700}
-  .qtext{font-size:16px;margin:6px 0 12px}
+  .qtext{font-size:16px;margin:6px 0 14px}
 
-  /* options */
-  .opts{display:grid;gap:10px}
+  .opts{display:grid;gap:12px}
   .opt{
     display:flex;align-items:center;gap:12px;
-    border:1px solid #ffffff; border-radius:12px;
-    padding:12px; background:var(--option-bg); color:#ffffff; cursor:pointer
+    border:1px solid #ffffff;border-radius:12px;
+    padding:12px;background:var(--option-bg);color:#ffffff;cursor:pointer
   }
   .opt:has(input:focus-visible){outline:3px solid #bcd6ff}
   .opt input[type="radio"]{appearance:auto;width:20px;height:20px}
   .opt.selected{box-shadow:0 0 0 3px #a6b7e9}
 
-  /* =================== Bottom Dock (single rectangle) =================== */
+  /* ===== BOTTOM DOCK ===== */
   .dock{
     position:fixed;left:0;right:0;bottom:0;z-index:50;
     background:var(--bottom-bg);
     border-top:1px solid #1e3a61; padding:12px 16px;
   }
-  .dock-inner{
-    max-width:1080px;margin:0 auto;
-    display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;
-  }
-  .btn{border:1px solid #2d4f7d;background:#1a3557;color:#e8f2ff;padding:12px 18px;border-radius:10px;cursor:pointer;font-weight:700;min-width:180px}
+  .dock-inner{width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center}
+  .btn{border:1px solid #2d4f7d;background:#1a3557;color:#e8f2ff;padding:12px 18px;border-radius:10px;cursor:pointer;font-weight:700;min-width:160px}
   .btn:disabled{opacity:.5;cursor:not-allowed}
   .btn-primary{background:#1f7cff;border-color:#2a7bff;color:#fff}
   .btn-danger{background:var(--warn);border-color:#ff9aa0;color:#fff}
@@ -148,7 +129,6 @@
   #btnNext{justify-self:end}
 
   @media (max-width:700px){
-    .app{padding-bottom:100px}
     .middle{grid-template-columns:64px 1fr}
     .idx{width:52px;height:34px}
     .btn{min-width:120px}
@@ -157,7 +137,7 @@
 </head>
 <body>
   <div class="app">
-    <!-- TOP section (single background) -->
+    <!-- TOP -->
     <section class="section-top" role="region" aria-label="Header and stats">
       <div class="topbar">
         <div class="clock-badge" aria-hidden="true"></div>
@@ -201,14 +181,12 @@
       </div>
     </section>
 
-    <!-- MIDDLE: left panel + main panel -->
+    <!-- MIDDLE -->
     <section class="middle">
-      <!-- LEFT panel -->
       <aside class="left-panel">
         <nav class="side" id="sidebar" aria-label="Questions list"></nav>
       </aside>
 
-      <!-- MAIN panel -->
       <div class="main-panel">
         <article class="card" id="qCard" aria-live="polite">
           <div class="qhead">
@@ -222,7 +200,7 @@
     </section>
   </div>
 
-  <!-- BOTTOM Dock (single background) -->
+  <!-- BOTTOM -->
   <div class="dock" role="region" aria-label="Bottom controls">
     <div class="dock-inner">
       <button class="btn" id="btnPrev" aria-label="Previous question">Previous</button>
@@ -232,7 +210,7 @@
   </div>
 
 <script>
-/* ======= CONFIG STATE ======= */
+/* ---------- STATE ---------- */
 const state = {
   itemsAnswered: 1, itemsTotal: 50, itemsPercentRight: 10,
   timeUsed: 50, timeTotal: 60, timePercent: 83,
@@ -240,7 +218,7 @@ const state = {
   totalQuestions: 50, startMinutes: 10
 };
 
-/* ======= DATA ======= */
+/* ---------- DATA (questions + options restored) ---------- */
 const questions = Array.from({length: state.totalQuestions}, (_,i)=>({
   id:i+1,
   text:`Sample question #${i+1}: Choose the correct answer.`,
@@ -248,21 +226,19 @@ const questions = Array.from({length: state.totalQuestions}, (_,i)=>({
   answer:null, flagged:false, skipped:false
 }));
 
-/* ======= HELPERS ======= */
+/* ---------- HELPERS ---------- */
 const $ = s=>document.querySelector(s);
-const setBar=(el,p,aria)=>{el.style.width=p+"%";aria.setAttribute("aria-valuenow",Math.round(p));}
+const setBar=(el,p,aria)=>{el.style.width=p+"%";aria.setAttribute("aria-valuenow",Math.round(p));};
 const pct=n=>`${Math.max(0,Math.min(100,Math.round(n)))}%`;
 
-/* ======= OVERVIEW ======= */
+/* ---------- OVERVIEW ---------- */
 function updateOverview(){
   $("#itemsLabel").textContent=` ${state.itemsAnswered} / ${state.itemsTotal}`;
   setBar($("#itemsBar"),(state.itemsAnswered/state.itemsTotal)*100,$("#itemsBar").parentElement);
   $("#itemsPercent").textContent=pct((state.itemsAnswered/state.itemsTotal)*100);
-
   $("#timeLabel").textContent=` ${state.timeUsed} / ${state.timeTotal}`;
   setBar($("#timeBar"),(state.timeUsed/state.timeTotal)*100,$("#timeBar").parentElement);
   $("#timePercent").textContent=pct((state.timeUsed/state.timeTotal)*100);
-
   $("#mcqPctTxt").textContent=pct(state.mcqPercent);
   setBar($("#mcqPctBar"),state.mcqPercent,$("#mcqPctBar").parentElement);
   $("#tfPctTxt").textContent=pct(state.tfPercent);
@@ -271,7 +247,7 @@ function updateOverview(){
   setBar($("#mcq2PctBar"),state.mcq2Percent,$("#mcq2PctBar").parentElement);
 }
 
-/* ======= SIDEBAR ======= */
+/* ---------- SIDEBAR ---------- */
 const side=$("#sidebar");
 function sidebarClass(q,i,active){
   let cls="idx";
@@ -292,7 +268,7 @@ function renderSidebar(active){
   });
 }
 
-/* ======= QUESTION ======= */
+/* ---------- QUESTION RENDER ---------- */
 let idx=0;
 const qTitle=$("#qTitle"), qText=$("#qText"), opts=$("#opts");
 function renderQuestion(){
@@ -300,6 +276,7 @@ function renderQuestion(){
   qTitle.textContent=`Q.${q.id}`;
   qText.textContent=q.text;
   opts.innerHTML="";
+
   q.options.forEach((label,i)=>{
     const row=document.createElement("label");
     row.className="opt"+(q.answer===i?" selected":"");
@@ -315,6 +292,7 @@ function renderQuestion(){
     row.appendChild(document.createTextNode(label));
     opts.appendChild(row);
   });
+
   $("#btnPrev").disabled = idx===0;
   const next=$("#btnNext");
   const last=idx===questions.length-1;
@@ -330,13 +308,13 @@ function updateAnswered(){
   updateOverview();
 }
 
-/* ======= NAV ======= */
+/* ---------- NAV ---------- */
 function go(i){ idx=i; renderQuestion(); }
 $("#btnPrev").addEventListener("click", ()=>{ if(idx>0){ idx--; renderQuestion(); } });
 $("#btnNext").addEventListener("click", ()=>{ if(idx<questions.length-1){ idx++; renderQuestion(); } else alert("Exam ended (visual only)."); });
 $("#btnFlag").addEventListener("click", ()=>{ const q=questions[idx]; q.flagged=!q.flagged; renderQuestion(); });
 
-/* ======= TIMER (visual) ======= */
+/* ---------- TIMER (visual) ---------- */
 let remainingSec=state.startMinutes*60;
 setInterval(()=>{
   remainingSec=Math.max(0,remainingSec-1);
@@ -346,11 +324,11 @@ setInterval(()=>{
   updateOverview();
 },1000);
 
-/* ======= INIT ======= */
+/* ---------- INIT ---------- */
 updateOverview(); renderSidebar(idx); renderQuestion();
 
-/* Tabs focus */
-[...document.querySelectorAll(".tab")].forEach((t,i)=>t.addEventListener("click",()=>{
+/* Tabs */
+document.querySelectorAll(".tab").forEach((t,i)=>t.addEventListener("click",()=>{
   document.querySelectorAll(".tab").forEach((x,j)=>x.setAttribute("aria-selected", String(i===j)));
 }));
 </script>
