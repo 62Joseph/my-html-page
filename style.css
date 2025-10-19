@@ -1,0 +1,27 @@
+.modecard{
+  background:#284260;
+  border:1px solid #355173;
+  border-radius:10px;
+  padding:8px 16px;
+  width:160px; /* نفس عرض زر Previous */
+  text-align:center;
+  font-weight:700;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.modehead{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.modebar{
+  height:8px;
+  background:#0d1f37;
+  border:1px solid #274567;
+  border-radius:6px;
+  position:relative;
+  overflow:hidden;
+}
+.modebar>span{
+  position:absolute;
+  inset:0 auto 0 0;
+  width:0;
+  background:linear-gradient(90deg,#58d76f,#3ed26b);
+}
