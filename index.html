@@ -3,130 +3,93 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Exam UI • Fixed View</title>
+<title>Exam UI • Panels</title>
 <style>
   :root{
-    --bg:#132845;
-    --bg-2:#0f223a;
-    --panel:#122b49;
-    --card:#091b1e;      /* تم التعديل */
-    --text:#eaf0ff;      /* نص فاتح داخل البطاقة الداكنة */
-    --accent:#0376e0;    /* sidebar blue */
-    --green:#47c776;     /* answered */
-    --flag:#fb922f;      /* flagged */
-    --warn:#ff5c5c;      /* end exam */
+    /* page + shared */
+    --page-bg:#132845;
+    --text:#eaf0ff;
+    --accent:#0376e0;
+    --green:#47c776;
+    --flag:#fb922f;
+    --warn:#ff5c5c;
     --shadow:0 8px 20px rgba(0,0,0,.15);
+
+    /* section backgrounds you can control */
+    --top-bg:#0f223a;    /* خلفية القسم العلوي */
+    --left-bg:#0f2747;   /* خلفية العمود الأيسر */
+    --main-bg:#0b1a2b;   /* خلفية المستطيل الكبير (منطقة الأسئلة) */
+    --bottom-bg:#0e1c31; /* خلفية الشريط السفلي */
+
+    /* inside the main question panel */
+    --card:#212b44;      /* لون البطاقة الداخلية */
+    --option-bg:#6274a6; /* خلفية كل خيار */
   }
+
   html,body{height:100%}
   body{
-    margin:0;background:var(--bg);color:#e8f1ff;
+    margin:0;background:var(--page-bg);color:var(--text);
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
     -webkit-font-smoothing:antialiased; line-height:1.4;
-    overflow:hidden; /* صفحة ثابتة بدون شريط تمرير عام */
+    overflow:hidden; /* لا يوجد شريط تمرير عام */
   }
   .app{
-    height:100vh; max-width:980px; margin:0 auto;
-    display:grid; grid-template-rows:auto auto 1fr auto;
-    gap:10px; padding:10px 12px 100px; /* مسافة لواجهة الأسفل الثابتة */
-    box-sizing:border-box;
+    height:100vh; max-width:1080px; margin:0 auto;
+    display:grid; grid-template-rows:auto 1fr auto;
+    gap:12px; padding:12px 12px 90px; box-sizing:border-box;
   }
 
-  /* ---------- Topbar + Stats as one panel ---------- */
+  /* =================== Section: TOP (single rectangle) =================== */
+  .section-top{
+    background:var(--top-bg);
+    border:1px solid #1a3557;
+    border-radius:12px;
+    box-shadow:var(--shadow);
+    padding:12px;
+  }
+  .topbar{
+    display:grid;grid-template-columns:48px 1fr 90px;align-items:center;gap:8px;margin-bottom:12px
+  }
+  .clock-badge{width:40px;height:40px;border-radius:999px;border:3px solid #89a6c7;display:grid;place-items:center}
+  .clock-badge::before{content:"";width:14px;height:14px;border:2px solid #89a6c7;border-radius:999px}
+  .tabs{display:flex;justify-content:center;gap:10px}
+  .tab{padding:8px 14px;border-radius:10px;background:#233858;color:#cfe2ff;border:1px solid #2f4a73}
+  .tab[aria-selected="true"]{background:#2c4a77;color:#fff;border-color:#638bd1}
+  .timer{justify-self:end;display:flex;gap:6px;align-items:center;color:#ffd59e}
+  .timer .ico{width:18px;height:18px;border-radius:50%;border:2px solid #ffd59e;position:relative}
+  .timer .ico::after{content:"";position:absolute;top:3px;left:7px;width:2px;height:6px;background:#ffd59e;border-radius:2px}
+  .timer .txt{font-weight:700}
 
-/* Topbar: نفس خلفية اللوحة وحدود علويّة فقط */
-.topbar{
-  background: var(--panel);
-  border-radius: 20px 20px 0 0;        /* حواف علوية فقط */
-  padding: 10px 12px;
-  display: grid;
-  grid-template-columns: 48px 1fr 82px;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid #17375b;
-  border-bottom: none;                  /* إزالة الحد السفلي للاتصال */
-  box-shadow: var(--shadow);            /* الظل على الرأس يكفي للوحة كاملة */
-}
+  .stats-wrap{display:grid;gap:10px}
+  .name{background:#2b4363;padding:10px 12px;border-radius:8px;font-weight:600}
+  .row{display:grid;grid-template-columns:110px 1fr 56px;align-items:center;gap:10px}
+  .bar{height:10px;background:#0d1f37;border-radius:6px;position:relative;overflow:hidden;border:1px solid #274567}
+  .bar>span{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#58d76f,#3ed26b)}
+  .mini{display:grid;gap:10px;grid-template-columns:repeat(3,1fr)}
+  .chip{background:#284260;border-radius:8px;padding:10px;border:1px solid #355173}
+  .chip .bar{height:8px}
 
-/* محتوى التوب بار كما هو */
-.clock-badge{width:40px;height:40px;border-radius:999px;border:3px solid #89a6c7;display:grid;place-items:center}
-.clock-badge::before{content:"";width:14px;height:14px;border:2px solid #89a6c7;border-radius:999px}
-.tabs{display:flex;justify-content:center;gap:10px}
-.tab{padding:8px 14px;border-radius:10px;background:#233858;color:#cfe2ff;border:1px solid #2f4a73}
-.tab[aria-selected="true"]{background:#2c4a77;color:#fff;border-color:#638bd1}
-.timer{justify-self:end;display:flex;gap:6px;align-items:center;color:#ffd59e}
-.timer .ico{width:18px;height:18px;border-radius:50%;border:2px solid #ffd59e;position:relative}
-.timer .ico::after{content:"";position:absolute;top:3px;left:7px;width:2px;height:6px;background:#ffd59e;border-radius:2px}
-.timer .txt{font-weight:700}
+  /* =================== Middle area: LEFT panel + MAIN panel =================== */
+  .middle{
+    display:grid;grid-template-columns:76px 1fr;gap:12px;min-height:0;
+  }
 
-/* Stats Card: تكملة اللوحة مع حدود سفلية فقط */
-.stats{
-  background: var(--panel);
-  border-radius: 0 0 20px 20px;         /* حواف سفلية فقط */
-  padding: 14px;
-  border: 1px solid #17375b;
-  border-top: none;                     /* اتصال مباشر مع التوب بار */
-  box-shadow: none;                     /* الظل قادم من .topbar */
-  margin-top: 0;                        /* إزالة أي فراغ علوي */
-}
-
-/* داخل البطاقة بزوايا حادة كما طلبت */
-.name{
-  background: #2b4363;
-  color: #e6f0ff;
-  border-radius: 0;
-  padding: 10px 12px;
-  font-weight: 600;
-}
-
-.rows{display:grid; gap:10px; margin-top:12px}
-.row{display:grid; grid-template-columns:110px 1fr 56px; align-items:center; gap:10px}
-.label{color:#eaf3ff}
-
-.bar{
-  height: 10px;
-  background: #0d1f37;
-  border-radius: 0;
-  position: relative;
-  overflow: hidden;
-  border: none;
-}
-.bar>span{
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 0;
-  background: linear-gradient(90deg,#58d76f,#3ed26b);
-}
-
-.percent{text-align:right; color:#cfe2ff}
-
-.mini{
-  display:grid;
-  gap:10px;
-  margin-top:12px;
-  grid-template-columns:1fr 1fr 1fr;
-}
-
-.chip{
-  background:#284260;
-  border-radius: 0;
-  padding: 12px 10px;
-  border: none;
-}
-.chip h4{margin:0 0 8px 0;font-size:14px;color:#e6f0ff}
-.chip .bar{height:8px;border-radius:0;border:none}
-
-  /* ---------- Main area ---------- */
-  .content{display:grid;grid-template-columns:50px 1fr;gap:12px;min-height:0}
-
-  /* Sidebar (التمرير هنا فقط) */
+  /* LEFT PANEL (single rectangle) */
+  .left-panel{
+    background:var(--left-bg);
+    border:1px solid #1f3d67;
+    border-radius:12px;
+    padding:8px 6px;
+    box-shadow:var(--shadow);
+    display:flex;flex-direction:column;min-height:0;
+  }
   .side{
-    overflow:auto; display:flex;flex-direction:column;gap:8px;padding:8px 6px 120px;
-    background:#0f2747; border-radius:6px;
+    overflow:auto; display:flex;flex-direction:column;gap:8px;min-height:0;
   }
   .idx{
-    display:grid;place-items:center;height:36px;width:40px;
-    background:var(--accent);color:#fff;font-weight:900;
-    border:1px solid #2a7bff;border-radius:7px; /* خلفية كل رقم: مربع ناعم الحواف */
+    display:grid;place-items:center;height:36px;width:56px;
+    background:var(--accent);color:#fff;font-weight:800;
+    border:1px solid #2a7bff;border-radius:8px;
     cursor:pointer;user-select:none;margin-inline:auto
   }
   .idx.active{outline:3px solid #a8d1ff66}
@@ -134,43 +97,49 @@
   .idx.flag{background:var(--flag);border-color:#ffd29b;color:#1e232b}
   .idx.skip{background:#ff7676;border-color:#ff9aa0}
 
-  /* Question card (لون البطاقة ونصها) */
+  /* MAIN PANEL (single rectangle) */
+  .main-panel{
+    background:var(--main-bg);
+    border:1px solid #1a3557;
+    border-radius:12px;
+    box-shadow:var(--shadow);
+    padding:12px;
+    overflow:hidden; display:flex;flex-direction:column;
+  }
+
+  /* Question card inside MAIN PANEL */
   .card{
-    background:var(--card); color:var(--text); border-radius:14px;
-    box-shadow:var(--shadow); padding:14px; border:1px solid #1d2740;
-    overflow:hidden; display:flex;flex-direction:column;min-height:0
+    background:var(--card); color:#e7eefc;
+    border:1px solid #1d2740; border-radius:12px;
+    padding:14px; flex:1 1 auto; display:flex;flex-direction:column;min-height:0
   }
   .qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
   .qtitle{font-weight:800;color:#bcd6ff}
   .marks{color:#5aa0ff;font-weight:700}
-  .qtext{font-size:16px;color:#e7eefc;margin:6px 0 12px}
+  .qtext{font-size:16px;margin:6px 0 12px}
 
-  /* خيارات: خلفية #6274a6 وحد أبيض */
+  /* options */
   .opts{display:grid;gap:10px}
   .opt{
     display:flex;align-items:center;gap:12px;
-    border:1px solid #ffffff;              /* تم التعديل */
-    border-radius:12px;
-    padding:12px;
-    background:#6274a6;                     /* تم التعديل */
-    color:#ffffff;
-    cursor:pointer;
+    border:1px solid #ffffff; border-radius:12px;
+    padding:12px; background:var(--option-bg); color:#ffffff; cursor:pointer
   }
   .opt:has(input:focus-visible){outline:3px solid #bcd6ff}
   .opt input[type="radio"]{appearance:auto;width:20px;height:20px}
   .opt.selected{box-shadow:0 0 0 3px #a6b7e9}
 
-  /* ---------- Bottom Dock ---------- */
+  /* =================== Bottom Dock (single rectangle) =================== */
   .dock{
     position:fixed;left:0;right:0;bottom:0;z-index:50;
-    background:#0b1c31cc; backdrop-filter: blur(4px);
+    background:var(--bottom-bg);
     border-top:1px solid #1e3a61; padding:12px 16px;
   }
   .dock-inner{
-    max-width:980px;margin:0 auto;
+    max-width:1080px;margin:0 auto;
     display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;
   }
-  .btn{border:1px solid #2d4f7d;background:#1a3557;color:#e8f2ff;padding:12px 18px;border-radius:12px;cursor:pointer;font-weight:700;min-width:180px}
+  .btn{border:1px solid #2d4f7d;background:#1a3557;color:#e8f2ff;padding:12px 18px;border-radius:10px;cursor:pointer;font-weight:700;min-width:180px}
   .btn:disabled{opacity:.5;cursor:not-allowed}
   .btn-primary{background:#1f7cff;border-color:#2a7bff;color:#fff}
   .btn-danger{background:var(--warn);border-color:#ff9aa0;color:#fff}
@@ -178,8 +147,9 @@
   #btnFlag{justify-self:center}
   #btnNext{justify-self:end}
 
-  @media (max-width:640px){
-    .content{grid-template-columns:64px 1fr}
+  @media (max-width:700px){
+    .app{padding-bottom:100px}
+    .middle{grid-template-columns:64px 1fr}
     .idx{width:52px;height:34px}
     .btn{min-width:120px}
   }
@@ -187,69 +157,72 @@
 </head>
 <body>
   <div class="app">
-    <!-- Topbar -->
-    <div class="topbar" role="region" aria-label="Top navigation">
-      <div class="clock-badge" aria-hidden="true"></div>
-      <div class="tabs" role="tablist" aria-label="Views">
-        <button class="tab" role="tab" aria-selected="true" tabindex="0" id="tab-summary">Summary</button>
-        <button class="tab" role="tab" aria-selected="false" tabindex="-1" id="tab-tools">Tools</button>
+    <!-- TOP section (single background) -->
+    <section class="section-top" role="region" aria-label="Header and stats">
+      <div class="topbar">
+        <div class="clock-badge" aria-hidden="true"></div>
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" aria-selected="true" id="tab-summary">Summary</button>
+          <button class="tab" role="tab" aria-selected="false" id="tab-tools">Tools</button>
+        </div>
+        <div class="timer" aria-live="polite" aria-atomic="true">
+          <span class="ico" aria-hidden="true"></span>
+          <span class="txt" id="timerText">10min</span>
+        </div>
       </div>
-      <div class="timer" aria-live="polite" aria-atomic="true">
-        <div class="ico" aria-hidden="true"></div>
-        <div class="txt" id="timerText">10min</div>
-      </div>
-    </div>
 
-    <!-- Stats Card -->
-    <section class="stats" aria-label="Progress overview">
-      <div class="name" id="userName">Raza Ishtiaq</div>
-      <div class="rows">
+      <div class="stats-wrap">
+        <div class="name" id="userName">Raza Ishtiaq</div>
         <div class="row">
-          <div class="label">Items <span id="itemsLabel">0 / 0</span></div>
-          <div class="bar" role="progressbar" aria-label="Items progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="itemsBar"></span></div>
-          <div class="percent" id="itemsPercent">0%</div>
+          <div>Items <span id="itemsLabel">0 / 0</span></div>
+          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="itemsBar"></span></div>
+          <div id="itemsPercent">0%</div>
         </div>
         <div class="row">
-          <div class="label">Time <span id="timeLabel">0 / 0</span></div>
-          <div class="bar" role="progressbar" aria-label="Time used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="timeBar"></span></div>
-          <div class="percent" id="timePercent">0%</div>
+          <div>Time <span id="timeLabel">0 / 0</span></div>
+          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="timeBar"></span></div>
+          <div id="timePercent">0%</div>
         </div>
-      </div>
-      <div class="mini" role="group" aria-label="Types stats">
-        <div class="chip">
-          <h4>MCQ <span id="mcqPctTxt">0%</span></h4>
-          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="mcqPctBar"></span></div>
-        </div>
-        <div class="chip">
-          <h4>T/F <span id="tfPctTxt">0%</span></h4>
-          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="tfPctBar"></span></div>
-        </div>
-        <div class="chip">
-          <h4>MCQ <span id="mcq2PctTxt">0%</span></h4>
-          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="mcq2PctBar"></span></div>
+
+        <div class="mini">
+          <div class="chip">
+            <div>MCQ <span id="mcqPctTxt">0%</span></div>
+            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="mcqPctBar"></span></div>
+          </div>
+          <div class="chip">
+            <div>T/F <span id="tfPctTxt">0%</span></div>
+            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="tfPctBar"></span></div>
+          </div>
+          <div class="chip">
+            <div>MCQ <span id="mcq2PctTxt">0%</span></div>
+            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="mcq2PctBar"></span></div>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Sidebar + Question -->
-    <section class="content">
-      <nav class="side" id="sidebar" aria-label="Questions list"></nav>
+    <!-- MIDDLE: left panel + main panel -->
+    <section class="middle">
+      <!-- LEFT panel -->
+      <aside class="left-panel">
+        <nav class="side" id="sidebar" aria-label="Questions list"></nav>
+      </aside>
 
-      <main class="card" id="qCard" aria-live="polite">
-        <div class="qhead">
-          <div class="qtitle" id="qTitle">Q.1</div>
-          <div class="marks">Marks 1.0</div>
-        </div>
-        <div class="qtext" id="qText">
-          Sample question: Choose the correct answer.
-        </div>
-        <form class="opts" id="opts" aria-label="Options"></form>
-      </main>
+      <!-- MAIN panel -->
+      <div class="main-panel">
+        <article class="card" id="qCard" aria-live="polite">
+          <div class="qhead">
+            <div class="qtitle" id="qTitle">Q.1</div>
+            <div class="marks">Marks 1.0</div>
+          </div>
+          <div class="qtext" id="qText">Sample question: Choose the correct answer.</div>
+          <form class="opts" id="opts" aria-label="Options"></form>
+        </article>
+      </div>
     </section>
-    <div aria-hidden="true"></div>
   </div>
 
-  <!-- Bottom Controls -->
+  <!-- BOTTOM Dock (single background) -->
   <div class="dock" role="region" aria-label="Bottom controls">
     <div class="dock-inner">
       <button class="btn" id="btnPrev" aria-label="Previous question">Previous</button>
@@ -259,14 +232,14 @@
   </div>
 
 <script>
-/* ======= CONFIGURABLE STATE ======= */
+/* ======= CONFIG STATE ======= */
 const state = {
   itemsAnswered: 1, itemsTotal: 50, itemsPercentRight: 10,
   timeUsed: 50, timeTotal: 60, timePercent: 83,
   mcqPercent: 10, tfPercent: 0, mcq2Percent: 0,
-  totalQuestions: 50,
-  startMinutes: 9
+  totalQuestions: 50, startMinutes: 10
 };
+
 /* ======= DATA ======= */
 const questions = Array.from({length: state.totalQuestions}, (_,i)=>({
   id:i+1,
@@ -275,31 +248,31 @@ const questions = Array.from({length: state.totalQuestions}, (_,i)=>({
   answer:null, flagged:false, skipped:false
 }));
 
-/* ======= DOM HELPERS ======= */
+/* ======= HELPERS ======= */
 const $ = s=>document.querySelector(s);
-const setBar = (el,pct,ariaEl)=>{el.style.width=pct+"%";ariaEl.setAttribute("aria-valuenow",Math.round(pct));};
-const fmtPct = n=>`${Math.max(0,Math.min(100,Math.round(n)))}%`;
+const setBar=(el,p,aria)=>{el.style.width=p+"%";aria.setAttribute("aria-valuenow",Math.round(p));}
+const pct=n=>`${Math.max(0,Math.min(100,Math.round(n)))}%`;
 
 /* ======= OVERVIEW ======= */
 function updateOverview(){
-  $("#itemsLabel").textContent = ` ${state.itemsAnswered} / ${state.itemsTotal}`;
-  setBar($("#itemsBar"), (state.itemsAnswered/state.itemsTotal)*100, $("#itemsBar").parentElement);
-  $("#itemsPercent").textContent = fmtPct((state.itemsAnswered/state.itemsTotal)*100);
+  $("#itemsLabel").textContent=` ${state.itemsAnswered} / ${state.itemsTotal}`;
+  setBar($("#itemsBar"),(state.itemsAnswered/state.itemsTotal)*100,$("#itemsBar").parentElement);
+  $("#itemsPercent").textContent=pct((state.itemsAnswered/state.itemsTotal)*100);
 
-  $("#timeLabel").textContent = ` ${state.timeUsed} / ${state.timeTotal}`;
-  setBar($("#timeBar"), (state.timeUsed/state.timeTotal)*100, $("#timeBar").parentElement);
-  $("#timePercent").textContent = fmtPct((state.timeUsed/state.timeTotal)*100);
+  $("#timeLabel").textContent=` ${state.timeUsed} / ${state.timeTotal}`;
+  setBar($("#timeBar"),(state.timeUsed/state.timeTotal)*100,$("#timeBar").parentElement);
+  $("#timePercent").textContent=pct((state.timeUsed/state.timeTotal)*100);
 
-  $("#mcqPctTxt").textContent = fmtPct(state.mcqPercent);
-  setBar($("#mcqPctBar"), state.mcqPercent, $("#mcqPctBar").parentElement);
-  $("#tfPctTxt").textContent  = fmtPct(state.tfPercent);
-  setBar($("#tfPctBar"), state.tfPercent, $("#tfPctBar").parentElement);
-  $("#mcq2PctTxt").textContent = fmtPct(state.mcq2Percent);
-  setBar($("#mcq2PctBar"), state.mcq2Percent, $("#mcq2PctBar").parentElement);
+  $("#mcqPctTxt").textContent=pct(state.mcqPercent);
+  setBar($("#mcqPctBar"),state.mcqPercent,$("#mcqPctBar").parentElement);
+  $("#tfPctTxt").textContent=pct(state.tfPercent);
+  setBar($("#tfPctBar"),state.tfPercent,$("#tfPctBar").parentElement);
+  $("#mcq2PctTxt").textContent=pct(state.mcq2Percent);
+  setBar($("#mcq2PctBar"),state.mcq2Percent,$("#mcq2PctBar").parentElement);
 }
 
 /* ======= SIDEBAR ======= */
-const side = $("#sidebar");
+const side=$("#sidebar");
 function sidebarClass(q,i,active){
   let cls="idx";
   if(q.flagged) cls+=" flag";
@@ -319,7 +292,7 @@ function renderSidebar(active){
   });
 }
 
-/* ======= QUESTION (single choice) ======= */
+/* ======= QUESTION ======= */
 let idx=0;
 const qTitle=$("#qTitle"), qText=$("#qText"), opts=$("#opts");
 function renderQuestion(){
@@ -339,20 +312,19 @@ function renderQuestion(){
       updateAnswered(); renderSidebar(idx);
     });
     row.appendChild(rb);
-    const t=document.createElement("span"); t.textContent=label; row.appendChild(t);
+    row.appendChild(document.createTextNode(label));
     opts.appendChild(row);
   });
   $("#btnPrev").disabled = idx===0;
   const next=$("#btnNext");
   const last=idx===questions.length-1;
-  next.textContent = last ? "End Exam" : "Next";
+  next.textContent= last?"End Exam":"Next";
   next.classList.toggle("btn-danger", last);
   next.classList.toggle("btn-primary", !last);
   $("#btnFlag").setAttribute("aria-pressed", String(q.flagged));
   renderSidebar(idx);
 }
 
-/* ======= STATE ======= */
 function updateAnswered(){
   state.itemsAnswered = questions.filter(q=>q.answer!==null).length;
   updateOverview();
@@ -361,32 +333,25 @@ function updateAnswered(){
 /* ======= NAV ======= */
 function go(i){ idx=i; renderQuestion(); }
 $("#btnPrev").addEventListener("click", ()=>{ if(idx>0){ idx--; renderQuestion(); } });
-$("#btnNext").addEventListener("click", ()=>{
-  if(idx<questions.length-1){ idx++; renderQuestion(); }
-  else alert("Exam ended (visual only).");
-});
-$("#btnFlag").addEventListener("click", ()=>{
-  const q=questions[idx]; q.flagged=!q.flagged; renderQuestion();
-});
+$("#btnNext").addEventListener("click", ()=>{ if(idx<questions.length-1){ idx++; renderQuestion(); } else alert("Exam ended (visual only)."); });
+$("#btnFlag").addEventListener("click", ()=>{ const q=questions[idx]; q.flagged=!q.flagged; renderQuestion(); });
 
-/* ======= TIMER (visual only) ======= */
-let remainingSec = state.startMinutes*60;
-function tick(){
+/* ======= TIMER (visual) ======= */
+let remainingSec=state.startMinutes*60;
+setInterval(()=>{
   remainingSec=Math.max(0,remainingSec-1);
   const m=Math.floor(remainingSec/60), s=remainingSec%60;
   $("#timerText").textContent = m>0?`${m}min`:`${s}s`;
   state.timeUsed = Math.min(state.timeTotal, state.timeTotal - Math.ceil(remainingSec/60));
   updateOverview();
-}
-setInterval(tick,1000);
+},1000);
 
 /* ======= INIT ======= */
 updateOverview(); renderSidebar(idx); renderQuestion();
 
-/* ======= Tabs ======= */
-const tabs=[$("#tab-summary"), $("#tab-tools")];
-tabs.forEach((t,i)=>t.addEventListener("click",()=>{
-  tabs.forEach((x,j)=>{x.setAttribute("aria-selected", String(i===j)); x.tabIndex = i===j?0:-1;});
+/* Tabs focus */
+[...document.querySelectorAll(".tab")].forEach((t,i)=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach((x,j)=>x.setAttribute("aria-selected", String(i===j)));
 }));
 </script>
 </body>
