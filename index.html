@@ -2,239 +2,392 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Exam Portal Mock</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Exam UI • Fixed View</title>
 <style>
   :root{
-    --bg:#0f1216;--panel:#171b20;--panel2:#1c2127;--text:#e6eaf0;--muted:#a7b0bc;
-    --line:#2a3038;--blue:#2b6ef6;--blue-2:#204ec9;--green:#2aa86a;--radius:12px;
+    --bg:#132845;
+    --bg-2:#0f223a;
+    --panel:#122b49;
+    --card:#091b1e;      /* تم التعديل */
+    --text:#eaf0ff;      /* نص فاتح داخل البطاقة الداكنة */
+    --accent:#0376e0;    /* sidebar blue */
+    --green:#47c776;     /* answered */
+    --flag:#fb922f;      /* flagged */
+    --warn:#ff5c5c;      /* end exam */
+    --shadow:0 8px 20px rgba(0,0,0,.15);
   }
-  *{box-sizing:border-box}
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--text);
-       font:400 15px/1.45 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-  body.details{padding-bottom:84px}
+  body{
+    margin:0;background:var(--bg);color:#e8f1ff;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.4;
+    overflow:hidden; /* صفحة ثابتة بدون شريط تمرير عام */
+  }
+  .app{
+    height:100vh; max-width:980px; margin:0 auto;
+    display:grid; grid-template-rows:auto auto 1fr auto;
+    gap:10px; padding:10px 12px 100px; /* مسافة لواجهة الأسفل الثابتة */
+    box-sizing:border-box;
+  }
 
-  /* الشريط العلوي */
-  .top{display:flex;align-items:center;gap:12px;padding:10px 16px;background:#0c0f13;border-bottom:1px solid var(--line)}
-  .avatar{width:28px;height:28px;border-radius:50%;background:#303744}
-  .welcome{color:var(--muted)}
-  .spacer{flex:1}
-  .icons{display:flex;gap:12px;color:var(--muted)}
-  .icon{width:18px;height:18px;border-radius:3px;background:#222833}
+  /* ---------- Topbar + Stats as one panel ---------- */
 
-  /* tabs */
-  .tabs{display:flex;justify-content:center;gap:16px;border-bottom:1px solid var(--line);background:#0f1318}
-  .tab{padding:12px 18px;color:var(--muted);cursor:pointer;user-select:none}
-  .tab.active{color:#fff;border-bottom:2px solid var(--blue)}
+/* Topbar: نفس خلفية اللوحة وحدود علويّة فقط */
+.topbar{
+  background: var(--panel);
+  border-radius: 20px 20px 0 0;        /* حواف علوية فقط */
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 48px 1fr 82px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #17375b;
+  border-bottom: none;                  /* إزالة الحد السفلي للاتصال */
+  box-shadow: var(--shadow);            /* الظل على الرأس يكفي للوحة كاملة */
+}
 
-  .page{max-width:1100px;margin:22px auto;padding:0 16px}
+/* محتوى التوب بار كما هو */
+.clock-badge{width:40px;height:40px;border-radius:999px;border:3px solid #89a6c7;display:grid;place-items:center}
+.clock-badge::before{content:"";width:14px;height:14px;border:2px solid #89a6c7;border-radius:999px}
+.tabs{display:flex;justify-content:center;gap:10px}
+.tab{padding:8px 14px;border-radius:10px;background:#233858;color:#cfe2ff;border:1px solid #2f4a73}
+.tab[aria-selected="true"]{background:#2c4a77;color:#fff;border-color:#638bd1}
+.timer{justify-self:end;display:flex;gap:6px;align-items:center;color:#ffd59e}
+.timer .ico{width:18px;height:18px;border-radius:50%;border:2px solid #ffd59e;position:relative}
+.timer .ico::after{content:"";position:absolute;top:3px;left:7px;width:2px;height:6px;background:#ffd59e;border-radius:2px}
+.timer .txt{font-weight:700}
 
-  .row{display:flex;align-items:center;gap:14px;margin-bottom:12px}
-  .grow{flex:1}
-  .toggle{display:inline-flex;align-items:center;gap:10px;color:var(--muted)}
-  .switch{width:46px;height:26px;border-radius:26px;background:#2a2f38;position:relative;cursor:pointer}
-  .switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#8993a3;transition:.2s}
-  .switch.on{background:var(--blue)} .switch.on::after{left:23px;background:#fff}
+/* Stats Card: تكملة اللوحة مع حدود سفلية فقط */
+.stats{
+  background: var(--panel);
+  border-radius: 0 0 20px 20px;         /* حواف سفلية فقط */
+  padding: 14px;
+  border: 1px solid #17375b;
+  border-top: none;                     /* اتصال مباشر مع التوب بار */
+  box-shadow: none;                     /* الظل قادم من .topbar */
+  margin-top: 0;                        /* إزالة أي فراغ علوي */
+}
 
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
-  .cardHead{display:flex;gap:12px;padding:6px 10px 14px;border-bottom:1px solid var(--line);font-weight:600}
-  .date{margin-left:auto;color:var(--muted);text-align:right}
-  .kv{display:grid;grid-template-columns:170px 1fr;row-gap:12px;column-gap:10px;padding:14px 10px}
-  .k{color:var(--muted)} .v{color:var(--text);text-align:right}
-  .status{color:#5bb9ff}
-  .cta{display:block;width:100%;margin-top:6px;padding:12px 14px;text-align:center;color:#dbe6ff;background:#0f1725;border:1px solid #2a3b67;border-radius:10px;cursor:pointer}
-  .cta.primary{background:var(--blue);border-color:var(--blue);color:#fff}
-  .cta.primary:active{background:var(--blue-2)}
+/* داخل البطاقة بزوايا حادة كما طلبت */
+.name{
+  background: #2b4363;
+  color: #e6f0ff;
+  border-radius: 0;
+  padding: 10px 12px;
+  font-weight: 600;
+}
 
-  /* details header */
-  .subtop{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:#0f1318}
-  .back{width:32px;height:28px;border-radius:10px;background:#222833;color:#cdd6e3;display:flex;align-items:center;justify-content:center;cursor:pointer}
-  .subTitle{font-weight:700}
+.rows{display:grid; gap:10px; margin-top:12px}
+.row{display:grid; grid-template-columns:110px 1fr 56px; align-items:center; gap:10px}
+.label{color:#eaf3ff}
 
-  .titleBig{font-weight:800;font-size:20px;padding:10px}
-  .spec{padding:0 10px 8px}
-  .spec h5{margin:0;color:#fff;font-weight:700}
-  .spec .val{color:var(--muted);margin-top:4px}
-  .sep{height:1px;background:var(--line);margin:12px 0}
-  .inst h5{color:#fff;margin:0 0 8px}
-  .inst .box{background:var(--panel2);border:1px dashed #2a313b;border-radius:10px;padding:14px;color:var(--muted)}
-  .blue{color:var(--blue)}
+.bar{
+  height: 10px;
+  background: #0d1f37;
+  border-radius: 0;
+  position: relative;
+  overflow: hidden;
+  border: none;
+}
+.bar>span{
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: linear-gradient(90deg,#58d76f,#3ed26b);
+}
 
-  /* bottom Start Exam */
-  .bottomBar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(15,18,22,.9);backdrop-filter:saturate(120%) blur(8px);border-top:1px solid var(--line);padding:14px 0;display:none;}
-  .bottomBar .inner{max-width:1100px;margin:0 auto;padding:0 16px}
-  .bottomBar .cta{margin:0}
+.percent{text-align:right; color:#cfe2ff}
 
-  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}
-  .overlay[hidden]{display:none!important}
-  .modal{width:min(440px,96vw);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.55)}
-  .modalHead{display:flex;align-items:center}
-  .modalHead .title{font-weight:700}
-  .closeX{margin-left:auto;background:#232a33;border:1px solid #2f3742;border-radius:8px;color:var(--muted);padding:6px 8px;cursor:pointer}
-  label{display:block;color:var(--muted);margin:12px 0 6px}
-  input[type=password]{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #2b313b;background:#11151a;color:var(--text)}
-  .modalActions{display:flex;gap:10px;margin-top:16px}
-  .btn{padding:10px 14px;border-radius:10px;border:1px solid #2b313b;background:#1a2028;color:var(--text);cursor:pointer}
-  .btn.green{background:var(--green);border-color:var(--green);color:#08130c}
+.mini{
+  display:grid;
+  gap:10px;
+  margin-top:12px;
+  grid-template-columns:1fr 1fr 1fr;
+}
 
-  .empty{display:grid;place-items:center;height:300px;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
-  @media (max-width:640px){.kv{grid-template-columns:140px 1fr}}
+.chip{
+  background:#284260;
+  border-radius: 0;
+  padding: 12px 10px;
+  border: none;
+}
+.chip h4{margin:0 0 8px 0;font-size:14px;color:#e6f0ff}
+.chip .bar{height:8px;border-radius:0;border:none}
+
+  /* ---------- Main area ---------- */
+  .content{display:grid;grid-template-columns:50px 1fr;gap:12px;min-height:0}
+
+  /* Sidebar (التمرير هنا فقط) */
+  .side{
+    overflow:auto; display:flex;flex-direction:column;gap:8px;padding:8px 6px 120px;
+    background:#0f2747; border-radius:6px;
+  }
+  .idx{
+    display:grid;place-items:center;height:36px;width:40px;
+    background:var(--accent);color:#fff;font-weight:900;
+    border:1px solid #2a7bff;border-radius:7px; /* خلفية كل رقم: مربع ناعم الحواف */
+    cursor:pointer;user-select:none;margin-inline:auto
+  }
+  .idx.active{outline:3px solid #a8d1ff66}
+  .idx.answered{background:var(--green);border-color:#7ae3a3}
+  .idx.flag{background:var(--flag);border-color:#ffd29b;color:#1e232b}
+  .idx.skip{background:#ff7676;border-color:#ff9aa0}
+
+  /* Question card (لون البطاقة ونصها) */
+  .card{
+    background:var(--card); color:var(--text); border-radius:14px;
+    box-shadow:var(--shadow); padding:14px; border:1px solid #1d2740;
+    overflow:hidden; display:flex;flex-direction:column;min-height:0
+  }
+  .qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .qtitle{font-weight:800;color:#bcd6ff}
+  .marks{color:#5aa0ff;font-weight:700}
+  .qtext{font-size:16px;color:#e7eefc;margin:6px 0 12px}
+
+  /* خيارات: خلفية #6274a6 وحد أبيض */
+  .opts{display:grid;gap:10px}
+  .opt{
+    display:flex;align-items:center;gap:12px;
+    border:1px solid #ffffff;              /* تم التعديل */
+    border-radius:12px;
+    padding:12px;
+    background:#6274a6;                     /* تم التعديل */
+    color:#ffffff;
+    cursor:pointer;
+  }
+  .opt:has(input:focus-visible){outline:3px solid #bcd6ff}
+  .opt input[type="radio"]{appearance:auto;width:20px;height:20px}
+  .opt.selected{box-shadow:0 0 0 3px #a6b7e9}
+
+  /* ---------- Bottom Dock ---------- */
+  .dock{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;
+    background:#0b1c31cc; backdrop-filter: blur(4px);
+    border-top:1px solid #1e3a61; padding:12px 16px;
+  }
+  .dock-inner{
+    max-width:980px;margin:0 auto;
+    display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;
+  }
+  .btn{border:1px solid #2d4f7d;background:#1a3557;color:#e8f2ff;padding:12px 18px;border-radius:12px;cursor:pointer;font-weight:700;min-width:180px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-primary{background:#1f7cff;border-color:#2a7bff;color:#fff}
+  .btn-danger{background:var(--warn);border-color:#ff9aa0;color:#fff}
+  #btnPrev{justify-self:start}
+  #btnFlag{justify-self:center}
+  #btnNext{justify-self:end}
+
+  @media (max-width:640px){
+    .content{grid-template-columns:64px 1fr}
+    .idx{width:52px;height:34px}
+    .btn{min-width:120px}
+  }
 </style>
 </head>
 <body>
-  <!-- top -->
-  <div class="top" id="topbar">
-    <div class="avatar"></div>
-    <div class="welcome">Welcome</div>
-    <div class="muted">yousef abdulrhman saud alhodaib</div>
-    <div class="spacer"></div>
-    <div class="icons"><div class="icon"></div><div class="icon"></div><div class="icon"></div></div>
-  </div>
-
-  <div class="tabs" id="tabs">
-    <div class="tab active" id="tab-sum">Summative</div>
-    <div class="tab" id="tab-form">Formative</div>
-  </div>
-
-  <div class="page" id="page-sum">
-    <div class="row">
-      <div class="muted">Total Exams: 1</div>
-      <div class="grow"></div>
-      <div class="toggle">Open All <div class="switch" id="openAll"></div></div>
+  <div class="app">
+    <!-- Topbar -->
+    <div class="topbar" role="region" aria-label="Top navigation">
+      <div class="clock-badge" aria-hidden="true"></div>
+      <div class="tabs" role="tablist" aria-label="Views">
+        <button class="tab" role="tab" aria-selected="true" tabindex="0" id="tab-summary">Summary</button>
+        <button class="tab" role="tab" aria-selected="false" tabindex="-1" id="tab-tools">Tools</button>
+      </div>
+      <div class="timer" aria-live="polite" aria-atomic="true">
+        <div class="ico" aria-hidden="true"></div>
+        <div class="txt" id="timerText">10min</div>
+      </div>
     </div>
 
-    <div class="card">
-      <div class="cardHead">
-        <div>NURS 222 MIDTERM EXAM</div>
-        <div class="date"><div>15 Oct 2025</div><div class="muted">01:00 PM</div></div>
+    <!-- Stats Card -->
+    <section class="stats" aria-label="Progress overview">
+      <div class="name" id="userName">Raza Ishtiaq</div>
+      <div class="rows">
+        <div class="row">
+          <div class="label">Items <span id="itemsLabel">0 / 0</span></div>
+          <div class="bar" role="progressbar" aria-label="Items progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="itemsBar"></span></div>
+          <div class="percent" id="itemsPercent">0%</div>
+        </div>
+        <div class="row">
+          <div class="label">Time <span id="timeLabel">0 / 0</span></div>
+          <div class="bar" role="progressbar" aria-label="Time used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="timeBar"></span></div>
+          <div class="percent" id="timePercent">0%</div>
+        </div>
       </div>
-
-      <div class="kv">
-        <div class="k">Course</div><div class="v">Adult Health Nursing (1)</div>
-        <div class="k">Duration</div><div class="v">02:00:00</div>
-        <div class="k">Proctored</div><div class="v">No</div>
-        <div class="k">Status</div><div class="v status">Available</div>
-        <div class="k">Upload Status</div><div class="v">-</div>
+      <div class="mini" role="group" aria-label="Types stats">
+        <div class="chip">
+          <h4>MCQ <span id="mcqPctTxt">0%</span></h4>
+          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="mcqPctBar"></span></div>
+        </div>
+        <div class="chip">
+          <h4>T/F <span id="tfPctTxt">0%</span></h4>
+          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="tfPctBar"></span></div>
+        </div>
+        <div class="chip">
+          <h4>MCQ <span id="mcq2PctTxt">0%</span></h4>
+          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="mcq2PctBar"></span></div>
+        </div>
       </div>
+    </section>
 
-      <button class="cta primary" id="btnAttempt">Attempt (Take Exam)</button>
-    </div>
+    <!-- Sidebar + Question -->
+    <section class="content">
+      <nav class="side" id="sidebar" aria-label="Questions list"></nav>
+
+      <main class="card" id="qCard" aria-live="polite">
+        <div class="qhead">
+          <div class="qtitle" id="qTitle">Q.1</div>
+          <div class="marks">Marks 1.0</div>
+        </div>
+        <div class="qtext" id="qText">
+          Sample question: Choose the correct answer.
+        </div>
+        <form class="opts" id="opts" aria-label="Options"></form>
+      </main>
+    </section>
+    <div aria-hidden="true"></div>
   </div>
 
-  <div class="page" id="page-form" style="display:none">
-    <div class="empty">No data found</div>
-  </div>
-
-  <div class="subtop" id="details-top" style="display:none">
-    <div class="back" id="backBtn" title="Back">←</div>
-    <div class="subTitle">NURS 222 MIDTERM EXAM</div>
-  </div>
-
-  <div class="page" id="page-details" style="display:none">
-    <div class="card">
-      <div class="titleBig">NURS 222 MIDTERM EXAM</div>
-      <div class="spec"><h5>Course</h5><div class="val">Adult Health Nursing (1)</div></div><div class="sep"></div>
-      <div class="spec"><h5>Total Duration</h5><div class="val" id="tot">02:00:00</div></div><div class="sep"></div>
-      <div class="spec"><h5>Remaining Duration</h5><div class="val"><span id="remain" class="blue">02:00:00</span></div></div><div class="sep"></div>
-      <div class="spec"><h5>Language</h5><div class="val">English</div></div><div class="sep"></div>
-      <div class="spec"><h5>Proctored</h5><div class="val">No</div></div><div class="sep"></div>
-      <div class="inst"><h5>Instructions</h5><div class="box">No Instructions Available.</div></div>
-    </div>
-  </div>
-
-  <div class="bottomBar" id="bottomBar">
-    <div class="inner">
-      <button class="cta primary" id="btnStart">Start Exam</button>
-    </div>
-  </div>
-
-  <div class="overlay" id="overlay" hidden>
-    <div class="modal">
-      <div class="modalHead">
-        <div class="title">Verification</div>
-        <button class="closeX" id="closeX">✕</button>
-      </div>
-      <label for="examPw">Examination Password</label>
-      <input id="examPw" type="password" placeholder="********" />
-      <div class="modalActions">
-        <button class="btn" id="cancel">Cancel</button>
-        <button class="btn green" id="verify">Verify</button>
-      </div>
+  <!-- Bottom Controls -->
+  <div class="dock" role="region" aria-label="Bottom controls">
+    <div class="dock-inner">
+      <button class="btn" id="btnPrev" aria-label="Previous question">Previous</button>
+      <button class="btn" id="btnFlag" aria-pressed="false" aria-label="Flag question">Flag</button>
+      <button class="btn btn-primary" id="btnNext" aria-label="Next question">Next</button>
     </div>
   </div>
 
 <script>
-const topbar = document.getElementById('topbar');
-const tabs = document.getElementById('tabs');
-const tabSum = document.getElementById('tab-sum');
-const tabForm = document.getElementById('tab-form');
-const pageSum = document.getElementById('page-sum');
-const pageForm = document.getElementById('page-form');
-const pageDetails = document.getElementById('page-details');
-const detailsTop = document.getElementById('details-top');
-const bottomBar = document.getElementById('bottomBar');
-const btnAttempt = document.getElementById('btnAttempt');
-const btnStart = document.getElementById('btnStart');
-const backBtn = document.getElementById('backBtn');
-const overlay = document.getElementById('overlay');
-const cancel = document.getElementById('cancel');
-const closeX = document.getElementById('closeX');
-const verify = document.getElementById('verify');
-const remain = document.getElementById('remain');
-const openAll = document.getElementById('openAll');
+/* ======= CONFIGURABLE STATE ======= */
+const state = {
+  itemsAnswered: 1, itemsTotal: 50, itemsPercentRight: 10,
+  timeUsed: 50, timeTotal: 60, timePercent: 83,
+  mcqPercent: 10, tfPercent: 0, mcq2Percent: 0,
+  totalQuestions: 50,
+  startMinutes: 9
+};
+/* ======= DATA ======= */
+const questions = Array.from({length: state.totalQuestions}, (_,i)=>({
+  id:i+1,
+  text:`Sample question #${i+1}: Choose the correct answer.`,
+  options:["Clean gloves","Sphygmomanometer","Urinary catheter","Disinfectant"],
+  answer:null, flagged:false, skipped:false
+}));
 
-function showOnly(...els){
-  [pageSum,pageForm,pageDetails].forEach(e=>e.style.display='none');
-  els.forEach(e=>e.style.display='block');
+/* ======= DOM HELPERS ======= */
+const $ = s=>document.querySelector(s);
+const setBar = (el,pct,ariaEl)=>{el.style.width=pct+"%";ariaEl.setAttribute("aria-valuenow",Math.round(pct));};
+const fmtPct = n=>`${Math.max(0,Math.min(100,Math.round(n)))}%`;
+
+/* ======= OVERVIEW ======= */
+function updateOverview(){
+  $("#itemsLabel").textContent = ` ${state.itemsAnswered} / ${state.itemsTotal}`;
+  setBar($("#itemsBar"), (state.itemsAnswered/state.itemsTotal)*100, $("#itemsBar").parentElement);
+  $("#itemsPercent").textContent = fmtPct((state.itemsAnswered/state.itemsTotal)*100);
+
+  $("#timeLabel").textContent = ` ${state.timeUsed} / ${state.timeTotal}`;
+  setBar($("#timeBar"), (state.timeUsed/state.timeTotal)*100, $("#timeBar").parentElement);
+  $("#timePercent").textContent = fmtPct((state.timeUsed/state.timeTotal)*100);
+
+  $("#mcqPctTxt").textContent = fmtPct(state.mcqPercent);
+  setBar($("#mcqPctBar"), state.mcqPercent, $("#mcqPctBar").parentElement);
+  $("#tfPctTxt").textContent  = fmtPct(state.tfPercent);
+  setBar($("#tfPctBar"), state.tfPercent, $("#tfPctBar").parentElement);
+  $("#mcq2PctTxt").textContent = fmtPct(state.mcq2Percent);
+  setBar($("#mcq2PctBar"), state.mcq2Percent, $("#mcq2PctBar").parentElement);
 }
 
-tabSum.onclick = ()=>{tabSum.classList.add('active');tabForm.classList.remove('active');
-  showOnly(pageSum);tabs.style.display='flex';detailsTop.style.display='none';
-  bottomBar.style.display='none';topbar.style.display='flex';document.body.classList.remove('details');};
-
-tabForm.onclick = ()=>{tabForm.classList.add('active');tabSum.classList.remove('active');
-  showOnly(pageForm);tabs.style.display='flex';detailsTop.style.display='none';
-  bottomBar.style.display='none';topbar.style.display='flex';document.body.classList.remove('details');};
-
-openAll.onclick = ()=>openAll.classList.toggle('on');
-
-btnAttempt.onclick = ()=>{
-  topbar.style.display='none';
-  tabs.style.display='none';
-  detailsTop.style.display='flex';
-  bottomBar.style.display='block';
-  document.body.classList.add('details');
-  showOnly(pageDetails);
-  remainingSeconds = 2*60*60; updateRemain();
-};
-
-backBtn.onclick = ()=>{
-  topbar.style.display='flex';
-  detailsTop.style.display='none';
-  tabs.style.display='flex';
-  bottomBar.style.display='none';
-  document.body.classList.remove('details');
-  showOnly(pageSum);
-};
-
-btnStart.onclick = ()=>{overlay.hidden=false;document.getElementById('examPw').focus();};
-cancel.onclick = closeX.onclick = ()=>overlay.hidden=true;
-verify.onclick = ()=>{
-  const v=document.getElementById('examPw').value;
-  if(!v){alert('Enter password');return;}
-  overlay.hidden=true;
-  alert('Password accepted (demo).');
-};
-
-let remainingSeconds=2*60*60;
-function updateRemain(){
-  const h=String(Math.floor(remainingSeconds/3600)).padStart(2,'0');
-  const m=String(Math.floor((remainingSeconds%3600)/60)).padStart(2,'0');
-  const s=String(remainingSeconds%60).padStart(2,'0');
-  remain.textContent=`${h}:${m}:${s}`;
+/* ======= SIDEBAR ======= */
+const side = $("#sidebar");
+function sidebarClass(q,i,active){
+  let cls="idx";
+  if(q.flagged) cls+=" flag";
+  if(q.answer!==null) cls+=" answered";
+  if(q.skipped) cls+=" skip";
+  if(i===active) cls+=" active";
+  return cls;
 }
-setInterval(()=>{if(pageDetails.style.display==='block'&&remainingSeconds>0){remainingSeconds--;updateRemain();}},1000);
+function renderSidebar(active){
+  side.innerHTML="";
+  questions.forEach((q,i)=>{
+    const b=document.createElement("button");
+    b.type="button"; b.className=sidebarClass(q,i,active);
+    b.textContent=q.id;
+    b.addEventListener("click",()=>go(i));
+    side.appendChild(b);
+  });
+}
+
+/* ======= QUESTION (single choice) ======= */
+let idx=0;
+const qTitle=$("#qTitle"), qText=$("#qText"), opts=$("#opts");
+function renderQuestion(){
+  const q=questions[idx];
+  qTitle.textContent=`Q.${q.id}`;
+  qText.textContent=q.text;
+  opts.innerHTML="";
+  q.options.forEach((label,i)=>{
+    const row=document.createElement("label");
+    row.className="opt"+(q.answer===i?" selected":"");
+    const rb=document.createElement("input");
+    rb.type="radio"; rb.name="opt"; rb.checked=q.answer===i;
+    rb.addEventListener("change",()=>{
+      q.answer=i;
+      [...opts.children].forEach(el=>el.classList.remove("selected"));
+      row.classList.add("selected");
+      updateAnswered(); renderSidebar(idx);
+    });
+    row.appendChild(rb);
+    const t=document.createElement("span"); t.textContent=label; row.appendChild(t);
+    opts.appendChild(row);
+  });
+  $("#btnPrev").disabled = idx===0;
+  const next=$("#btnNext");
+  const last=idx===questions.length-1;
+  next.textContent = last ? "End Exam" : "Next";
+  next.classList.toggle("btn-danger", last);
+  next.classList.toggle("btn-primary", !last);
+  $("#btnFlag").setAttribute("aria-pressed", String(q.flagged));
+  renderSidebar(idx);
+}
+
+/* ======= STATE ======= */
+function updateAnswered(){
+  state.itemsAnswered = questions.filter(q=>q.answer!==null).length;
+  updateOverview();
+}
+
+/* ======= NAV ======= */
+function go(i){ idx=i; renderQuestion(); }
+$("#btnPrev").addEventListener("click", ()=>{ if(idx>0){ idx--; renderQuestion(); } });
+$("#btnNext").addEventListener("click", ()=>{
+  if(idx<questions.length-1){ idx++; renderQuestion(); }
+  else alert("Exam ended (visual only).");
+});
+$("#btnFlag").addEventListener("click", ()=>{
+  const q=questions[idx]; q.flagged=!q.flagged; renderQuestion();
+});
+
+/* ======= TIMER (visual only) ======= */
+let remainingSec = state.startMinutes*60;
+function tick(){
+  remainingSec=Math.max(0,remainingSec-1);
+  const m=Math.floor(remainingSec/60), s=remainingSec%60;
+  $("#timerText").textContent = m>0?`${m}min`:`${s}s`;
+  state.timeUsed = Math.min(state.timeTotal, state.timeTotal - Math.ceil(remainingSec/60));
+  updateOverview();
+}
+setInterval(tick,1000);
+
+/* ======= INIT ======= */
+updateOverview(); renderSidebar(idx); renderQuestion();
+
+/* ======= Tabs ======= */
+const tabs=[$("#tab-summary"), $("#tab-tools")];
+tabs.forEach((t,i)=>t.addEventListener("click",()=>{
+  tabs.forEach((x,j)=>{x.setAttribute("aria-selected", String(i===j)); x.tabIndex = i===j?0:-1;});
+}));
 </script>
 </body>
 </html>
