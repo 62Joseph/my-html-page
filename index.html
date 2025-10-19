@@ -14,15 +14,15 @@
     --warn:#ff5c5c;
     --shadow:0 8px 20px rgba(0,0,0,.15);
 
-    /* editable section backgrounds */
-    --top-bg:#0f223a;    /* header rectangle */
-    --left-bg:#0f2747;   /* left column rectangle */
-    --main-bg:#0b1a2b;   /* big middle rectangle */
-    --bottom-bg:#0e1c31; /* bottom dock rectangle */
+    /* section backgrounds */
+    --top-bg:#0f223a;
+    --left-bg:#0f2747;
+    --main-bg:#0b1a2b;
+    --bottom-bg:#0e1c31;
 
     /* inside main panel */
-    --card:#212b44;      /* question card */
-    --option-bg:#6274a6; /* option item background */
+    --card:#212b44;
+    --option-bg:#6274a6;
   }
 
   html,body{height:100%}
@@ -30,7 +30,7 @@
     margin:0;background:var(--page-bg);color:var(--text);
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;
     -webkit-font-smoothing:antialiased; line-height:1.4;
-    overflow:hidden; /* fixed page; only sidebar scrolls */
+    overflow:hidden;
   }
 
   .app{
@@ -45,11 +45,11 @@
     border:1px solid #1a3557; border-radius:12px;
     box-shadow:var(--shadow); padding:12px;
   }
-  .topbar{display:grid;grid-template-columns:48px 1fr 90px;align-items:center;gap:8px;margin-bottom:12px}
+  .topbar{display:grid;grid-template-columns:48px 1fr 110px;align-items:center;gap:10px;margin-bottom:12px}
   .clock-badge{width:40px;height:40px;border-radius:999px;border:3px solid #89a6c7;display:grid;place-items:center}
   .clock-badge::before{content:"";width:14px;height:14px;border:2px solid #89a6c7;border-radius:999px}
-  .tabs{display:flex;justify-content:center;gap:10px}
-  .tab{padding:8px 14px;border-radius:10px;background:#233858;color:#cfe2ff;border:1px solid #2f4a73}
+  .tabs{display:flex;justify-content:center;gap:14px}
+  .tab{padding:10px 22px;font-size:15px;border-radius:12px;background:#233858;color:#cfe2ff;border:1px solid #2f4a73}
   .tab[aria-selected="true"]{background:#2c4a77;color:#fff;border-color:#638bd1}
   .timer{justify-self:end;display:flex;gap:6px;align-items:center;color:#ffd59e}
   .timer .ico{width:18px;height:18px;border-radius:50%;border:2px solid #ffd59e;position:relative}
@@ -58,17 +58,21 @@
 
   .stats-wrap{display:grid;gap:10px}
   .name{background:#2b4363;padding:10px 12px;border-radius:8px;font-weight:600;display:inline-block;text-align:left}
-  .row{display:grid;grid-template-columns:110px 1fr 56px;align-items:center;gap:10px}
+  /* aligned rows: same grid for Items and Time */
+  .row{display:grid;grid-template-columns:220px 1fr 56px;align-items:center;gap:10px}
+  .lcol{white-space:nowrap}
   .bar{height:10px;background:#0d1f37;border-radius:6px;position:relative;overflow:hidden;border:1px solid #274567}
   .bar>span{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#58d76f,#3ed26b)}
-  .mini{display:grid;gap:10px;grid-template-columns:repeat(3,1fr)}
-  .chip{background:#284260;border-radius:8px;padding:10px;border:1px solid #355173}
-  .chip .bar{height:8px}
+
+  /* one small mode badge + its progress underneath */
+  .mode-wrap{margin-top:8px;display:inline-flex;flex-direction:column;gap:8px;align-items:flex-start}
+  .mode{border:1px solid #2d4f7d;background:#1a3557;color:#e8f2ff;
+        padding:10px 18px;border-radius:10px;font-weight:700}
+  .modebar{width:220px;height:8px;background:#0d1f37;border:1px solid #274567;border-radius:6px;position:relative;overflow:hidden}
+  .modebar>span{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#58d76f,#3ed26b)}
 
   /* ===== MIDDLE: LEFT + MAIN ===== */
   .middle{display:grid;grid-template-columns:76px 1fr;gap:12px;min-height:0}
-
-  /* left rectangle */
   .left-panel{
     background:var(--left-bg);
     border:1px solid #1f3d67;border-radius:12px;box-shadow:var(--shadow);
@@ -85,14 +89,12 @@
   .idx.flag{background:var(--flag);border-color:#ffd29b;color:#1e232b}
   .idx.skip{background:#ff7676;border-color:#ff9aa0}
 
-  /* main rectangle */
   .main-panel{
     background:var(--main-bg);
     border:1px solid #1a3557;border-radius:12px;box-shadow:var(--shadow);
     padding:12px;overflow:hidden;display:flex;flex-direction:column;
   }
 
-  /* question card with options */
   .card{
     background:var(--card); color:#e7eefc;
     border:1px solid #1d2740; border-radius:12px;
@@ -110,7 +112,23 @@
     padding:12px;background:var(--option-bg);color:#ffffff;cursor:pointer
   }
   .opt:has(input:focus-visible){outline:3px solid #bcd6ff}
-  .opt input[type="radio"]{appearance:auto;width:20px;height:20px}
+
+  /* custom radios: hollow white; checked -> blue ring with hollow center (same as option bg showing through) */
+  .opt input[type="radio"]{
+    appearance:none; -webkit-appearance:none; -moz-appearance:none;
+    width:20px;height:20px;border-radius:50%;
+    border:2px solid #ffffff; background:transparent;
+    transition:border-color .15s ease, background .15s ease, box-shadow .15s ease;
+  }
+  .opt input[type="radio"]:hover{box-shadow:0 0 0 3px rgba(255,255,255,.15)}
+  .opt input[type="radio"]:checked{
+    border-color:#1f7cff;
+    background-color:#1f7cff;
+    /* cut a hole so the center looks hollow like the option background */
+    -webkit-mask: radial-gradient(circle, transparent 55%, #000 56%);
+            mask: radial-gradient(circle, transparent 55%, #000 56%);
+  }
+
   .opt.selected{box-shadow:0 0 0 3px #a6b7e9}
 
   /* ===== BOTTOM DOCK ===== */
@@ -129,9 +147,11 @@
   #btnNext{justify-self:end}
 
   @media (max-width:700px){
+    .row{grid-template-columns:200px 1fr 56px}
     .middle{grid-template-columns:64px 1fr}
     .idx{width:52px;height:34px}
     .btn{min-width:120px}
+    .modebar{width:180px}
   }
 </style>
 </head>
@@ -153,29 +173,26 @@
 
       <div class="stats-wrap">
         <div class="name" id="userName">Raza Ishtiaq</div>
+
         <div class="row">
-          <div>Items <span id="itemsLabel">0 / 0</span></div>
+          <div class="lcol">Items <span id="itemsLabel">0 / 0</span></div>
           <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="itemsBar"></span></div>
           <div id="itemsPercent">0%</div>
         </div>
+
         <div class="row">
-          <div>Time <span id="timeLabel">0 / 0</span></div>
-          <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="timeBar"></span></div>
+          <div class="lcol" id="timeText">Time 0 / 120 (mins)</div>
+          <div class="bar" role="progressbar" aria-label="Time used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <span id="timeBar"></span>
+          </div>
           <div id="timePercent">0%</div>
         </div>
 
-        <div class="mini">
-          <div class="chip">
-            <div>MCQ <span id="mcqPctTxt">0%</span></div>
-            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="mcqPctBar"></span></div>
-          </div>
-          <div class="chip">
-            <div>T/F <span id="tfPctTxt">0%</span></div>
-            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="tfPctBar"></span></div>
-          </div>
-          <div class="chip">
-            <div>MCQ <span id="mcq2PctTxt">0%</span></div>
-            <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="mcq2PctBar"></span></div>
+        <!-- Single small type + progress under it -->
+        <div class="mode-wrap">
+          <button class="mode" type="button" aria-pressed="true">Multi Choice</button>
+          <div class="modebar" role="progressbar" aria-label="Multi Choice completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <span id="modeBar"></span>
           </div>
         </div>
       </div>
@@ -212,13 +229,12 @@
 <script>
 /* ---------- STATE ---------- */
 const state = {
-  itemsAnswered: 1, itemsTotal: 50, itemsPercentRight: 10,
-  timeUsed: 50, timeTotal: 60, timePercent: 83,
-  mcqPercent: 10, tfPercent: 0, mcq2Percent: 0,
-  totalQuestions: 50, startMinutes: 10
+  itemsAnswered: 0, itemsTotal: 50,
+  totalQuestions: 50,
+  timeUsed: 0, timeTotal: 120
 };
 
-/* ---------- DATA (questions + options restored) ---------- */
+/* ---------- DATA ---------- */
 const questions = Array.from({length: state.totalQuestions}, (_,i)=>({
   id:i+1,
   text:`Sample question #${i+1}: Choose the correct answer.`,
@@ -233,104 +249,10 @@ const pct=n=>`${Math.max(0,Math.min(100,Math.round(n)))}%`;
 
 /* ---------- OVERVIEW ---------- */
 function updateOverview(){
-  $("#itemsLabel").textContent=` ${state.itemsAnswered} / ${state.itemsTotal}`;
-  setBar($("#itemsBar"),(state.itemsAnswered/state.itemsTotal)*100,$("#itemsBar").parentElement);
-  $("#itemsPercent").textContent=pct((state.itemsAnswered/state.itemsTotal)*100);
-  $("#timeLabel").textContent=` ${state.timeUsed} / ${state.timeTotal}`;
-  setBar($("#timeBar"),(state.timeUsed/state.timeTotal)*100,$("#timeBar").parentElement);
-  $("#timePercent").textContent=pct((state.timeUsed/state.timeTotal)*100);
-  $("#mcqPctTxt").textContent=pct(state.mcqPercent);
-  setBar($("#mcqPctBar"),state.mcqPercent,$("#mcqPctBar").parentElement);
-  $("#tfPctTxt").textContent=pct(state.tfPercent);
-  setBar($("#tfPctBar"),state.tfPercent,$("#tfPctBar").parentElement);
-  $("#mcq2PctTxt").textContent=pct(state.mcq2Percent);
-  setBar($("#mcq2PctBar"),state.mcq2Percent,$("#mcq2PctBar").parentElement);
-}
+  $("#itemsLabel").textContent=` ${state.itemsAnswered} / ${state.totalQuestions}`;
+  const itemsPct=(state.itemsAnswered/state.totalQuestions)*100;
+  setBar($("#itemsBar"),itemsPct,$("#itemsBar").parentElement);
+  $("#itemsPercent").textContent=pct(itemsPct);
 
-/* ---------- SIDEBAR ---------- */
-const side=$("#sidebar");
-function sidebarClass(q,i,active){
-  let cls="idx";
-  if(q.flagged) cls+=" flag";
-  if(q.answer!==null) cls+=" answered";
-  if(q.skipped) cls+=" skip";
-  if(i===active) cls+=" active";
-  return cls;
-}
-function renderSidebar(active){
-  side.innerHTML="";
-  questions.forEach((q,i)=>{
-    const b=document.createElement("button");
-    b.type="button"; b.className=sidebarClass(q,i,active);
-    b.textContent=q.id;
-    b.addEventListener("click",()=>go(i));
-    side.appendChild(b);
-  });
-}
-
-/* ---------- QUESTION RENDER ---------- */
-let idx=0;
-const qTitle=$("#qTitle"), qText=$("#qText"), opts=$("#opts");
-function renderQuestion(){
-  const q=questions[idx];
-  qTitle.textContent=`Q.${q.id}`;
-  qText.textContent=q.text;
-  opts.innerHTML="";
-
-  q.options.forEach((label,i)=>{
-    const row=document.createElement("label");
-    row.className="opt"+(q.answer===i?" selected":"");
-    const rb=document.createElement("input");
-    rb.type="radio"; rb.name="opt"; rb.checked=q.answer===i;
-    rb.addEventListener("change",()=>{
-      q.answer=i;
-      [...opts.children].forEach(el=>el.classList.remove("selected"));
-      row.classList.add("selected");
-      updateAnswered(); renderSidebar(idx);
-    });
-    row.appendChild(rb);
-    row.appendChild(document.createTextNode(label));
-    opts.appendChild(row);
-  });
-
-  $("#btnPrev").disabled = idx===0;
-  const next=$("#btnNext");
-  const last=idx===questions.length-1;
-  next.textContent= last?"End Exam":"Next";
-  next.classList.toggle("btn-danger", last);
-  next.classList.toggle("btn-primary", !last);
-  $("#btnFlag").setAttribute("aria-pressed", String(q.flagged));
-  renderSidebar(idx);
-}
-
-function updateAnswered(){
-  state.itemsAnswered = questions.filter(q=>q.answer!==null).length;
-  updateOverview();
-}
-
-/* ---------- NAV ---------- */
-function go(i){ idx=i; renderQuestion(); }
-$("#btnPrev").addEventListener("click", ()=>{ if(idx>0){ idx--; renderQuestion(); } });
-$("#btnNext").addEventListener("click", ()=>{ if(idx<questions.length-1){ idx++; renderQuestion(); } else alert("Exam ended (visual only)."); });
-$("#btnFlag").addEventListener("click", ()=>{ const q=questions[idx]; q.flagged=!q.flagged; renderQuestion(); });
-
-/* ---------- TIMER (visual) ---------- */
-let remainingSec=state.startMinutes*60;
-setInterval(()=>{
-  remainingSec=Math.max(0,remainingSec-1);
-  const m=Math.floor(remainingSec/60), s=remainingSec%60;
-  $("#timerText").textContent = m>0?`${m}min`:`${s}s`;
-  state.timeUsed = Math.min(state.timeTotal, state.timeTotal - Math.ceil(remainingSec/60));
-  updateOverview();
-},1000);
-
-/* ---------- INIT ---------- */
-updateOverview(); renderSidebar(idx); renderQuestion();
-
-/* Tabs */
-document.querySelectorAll(".tab").forEach((t,i)=>t.addEventListener("click",()=>{
-  document.querySelectorAll(".tab").forEach((x,j)=>x.setAttribute("aria-selected", String(i===j)));
-}));
-</script>
-</body>
-</html>
+  $("#timeText").textContent = `Time ${Math.floor(state.timeUsed)} / ${state.timeTotal} (mins)`;
+  const timePct = (state.timeUsed/state.timeTotal)*100;
