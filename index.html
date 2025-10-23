@@ -6,22 +6,24 @@
 <title>Exam UI • Panels</title>
 <style>
   :root{
-    --page-bg:#0d141d;
+    --page-bg:##0d1116;
     --text:#eaf0ff;
-    --accent:#0677e1;
+    --accent:#0172da;
     --green:#47c776;
     --flag:#fb922f;
     --warn:#ff5c5c;
     --shadow:0 8px 20px rgba(0,0,0,.15);
 
-    --top-bg:#0f223a;
-    --left-bg:#0d141d;
-    --main-bg:#0d141d;
-    --bottom-bg:#0e11;
+    --top-bg:#0f1b29;
+    --left-bg:#000000;
+    --main-bg:#0e121a;
+    --bottom-bg:#0c1420;
 
-    --card:#0d141d;
-    --option-bg:#39466c;
-    --marks-blue:#3c8ffe;
+    --card:#0e121a;
+    --option-bg:#475477;
+    --marks-blue:#5aa0ff;
+
+    --qscale:1; /* يتغير بزرّي الحجم */
   }
 
   html,body{height:100%}
@@ -40,7 +42,7 @@
 
   /* Top */
   .section-top{background:var(--top-bg);border:1px solid #1a3557;border-radius:12px;box-shadow:var(--shadow);padding:12px}
-  .topbar{display:grid;grid-template-columns:48px 1fr 200px;align-items:center;gap:10px;margin-bottom:12px}
+  .topbar{display:grid;grid-template-columns:48px 1fr 160px;align-items:center;gap:10px;margin-bottom:12px}
   .clock-badge{width:40px;height:40px;border-radius:999px;border:3px solid #89a6c7;display:grid;place-items:center}
   .clock-badge::before{content:"";width:14px;height:14px;border:2px solid #89a6c7;border-radius:999px}
   .tabs{display:flex;justify-content:center;gap:14px}
@@ -58,7 +60,7 @@
   .bar{height:10px;background:#0d1f37;border-radius:6px;position:relative;overflow:hidden;border:1px solid #274567}
   .bar>span{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#58d76f,#3ed26b)}
 
-  /* Integrated Multi Choice + progress (same width as Previous) */
+  /* Integrated Multi Choice + progress */
   .modecard{background:#284260;border:1px solid #355173;border-radius:10px;padding:8px 16px;width:160px;text-align:center;font-weight:700;display:flex;flex-direction:column;gap:6px}
   .modehead{display:flex;justify-content:space-between;align-items:center;font-size:14px}
   .modebar{height:8px;background:#0d1f37;border:1px solid #274567;border-radius:6px;position:relative;overflow:hidden}
@@ -76,17 +78,26 @@
 
   .main-panel{background:var(--main-bg);border:1px solid #1a3557;border-radius:12px;box-shadow:var(--shadow);padding:12px;overflow:hidden;display:flex;flex-direction:column}
   .card{background:var(--card);color:#e7eefc;border:1px solid #1d2740;border-radius:12px;padding:14px;flex:1 1 auto;display:flex;flex-direction:column;min-height:0}
-  .qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
   .qtitle{font-weight:800}
   .qtitle .blue{color:var(--marks-blue)}
   .marks{color:var(--marks-blue);font-weight:700}
-  .qtext{font-size:16px;margin:6px 0 14px}
-
+  /* الفاصل الرقيق + أدوات حجم الخط */
+  .qtools{
+    margin-top:6px;padding-top:8px;border-top:1px solid #314261;
+    display:flex;align-items:center;gap:10px;
+  }
+  .qtools .label{color:#5aa0ff;font-weight:700}
+  .size-btn{
+    width:32px;height:32px;border-radius:16px;border:1px solid #4a5e86;
+    background:#2a3a57;color:#eaf0ff;display:grid;place-items:center;
+    font-size:18px;cursor:pointer;
+  }
+  .size-btn:focus-visible{outline:3px solid #89a6ff}
+  .qtext{font-size:calc(16px * var(--qscale));margin:10px 0 14px}
   .opts{display:grid;gap:12px}
-  .opt{display:flex;align-items:center;gap:12px;border:1px solid #ffffff;border-radius:12px;padding:12px;background:var(--option-bg);color:#ffffff;cursor:pointer}
+  .opt{display:flex;align-items:center;gap:12px;border:1px solid #ffffff;border-radius:12px;padding:12px;background:var(--option-bg);color:#ffffff;cursor:pointer;font-size:calc(16px * var(--qscale))}
   .opt:has(input:focus-visible){outline:3px solid #bcd6ff}
-
-  /* radios: hollow white; checked -> blue ring with hollow center */
   .opt input[type="radio"]{
     appearance:none;-webkit-appearance:none;-moz-appearance:none;
     width:20px;height:20px;border-radius:50%;
@@ -110,13 +121,6 @@
   #btnPrev{justify-self:start}
   #btnFlag{justify-self:center}
   #btnNext{justify-self:end}
-
-  @media (max-width:700px){
-    .row{grid-template-columns:200px 1fr 56px}
-    .middle{grid-template-columns:64px 1fr}
-    .idx{width:52px;height:34px}
-    .btn{min-width:120px}
-  }
 </style>
 </head>
 <body>
@@ -139,7 +143,7 @@
         <div class="name" id="userName">yousef abdulrhman alhodaib</div>
 
         <div class="row">
-          <div class="lcol">Items <span id="itemsLabel">0 / 50</span></div>
+          <div class="lcol">Items <span id="itemsLabel">0 / 30</span></div>
           <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="itemsBar"></span></div>
           <div id="itemsPercent">0%</div>
         </div>
@@ -152,7 +156,6 @@
           <div id="timePercent">0%</div>
         </div>
 
-        <!-- Integrated Multi Choice card with progress -->
         <div class="modecard" role="group" aria-label="Question type and progress">
           <div class="modehead">
             <span>Multi Choice</span>
@@ -175,8 +178,16 @@
         <article class="card" id="qCard" aria-live="polite">
           <div class="qhead">
             <div class="qtitle" id="qTitle"><span class="blue">Q.1</span></div>
-            <div class="marks">Marks 1.0</div>
+            <div class="marks">Marks 0.83</div>
           </div>
+
+          <!-- Divider + Text size controls -->
+          <div class="qtools">
+            <span class="label">Text size</span>
+            <button type="button" class="size-btn" id="inc" aria-label="Increase text size">+</button>
+            <button type="button" class="size-btn" id="dec" aria-label="Decrease text size">−</button>
+          </div>
+
           <div class="qtext" id="qText"></div>
           <form class="opts" id="opts" aria-label="Options"></form>
         </article>
@@ -194,60 +205,50 @@
   </div>
 
 <script>
-/* ====== 20 سؤال حقيقي (سيُبنى منهم 50 بدون تكرار متتالي) ====== */
+/* ==== 30 سؤال ==== */
 const bank = [
-  {q:"Which term best describes a person’s central inner force?", a:["Self-concept","Self","Ego","Identity"]},
-  {q:"What is the self-concept?", a:["The objective description of who you are","The subjective description filtered through your perception","The personality you show to others","Your moral values"]},
-  {q:"Which three components reflect self-concept?", a:["Thoughts, Feelings, Emotions","Attitudes, Beliefs, Values","Habits, Ideas, Opinions","Mind, Body, Spirit"]},
-  {q:"What is an attitude?", a:["A temporary emotional reaction","A learned predisposition to respond favorably or unfavorably","A personal value","A belief system"]},
-  {q:"The ability to think consciously about what you are doing is called:", a:["Intuition","Awareness","Mindfulness","Observation"]},
-  {q:"Which type of self-awareness allows people to differentiate themselves from their environment?", a:["Subjective","Objective","Symbolic","Reflective"]},
-  {q:"According to Maslow, which stage occurs when you are unaware of your own incompetence?", a:["Conscious competence","Unconscious incompetence","Conscious incompetence","Unconscious competence"]},
-  {q:"The spiritual self is mainly concerned with:", a:["Physical appearance","Social interactions","Internal thoughts and moral standards","Possessions and material wealth"]},
-  {q:"The “looking-glass self” means:", a:["People judge others based on looks","We learn who we are by how others reflect us","We ignore others’ feedback","We depend only on self-perception"]},
-  {q:"Which attachment style involves comfort in giving and receiving affection?", a:["Avoidant","Anxious","Secure","Dependent"]},
-  {q:"Which of the following is not one of the Big Five personality traits?", a:["Extraversion","Agreeableness","Perfectionism","Openness"]},
-  {q:"What is self-esteem?", a:["Your belief about what is true or false","Your evaluation of your own worth or value","Your outer personality","Your level of education"]},
-  {q:"According to Berne’s life positions, “I’m OK, you’re not OK” indicates:", a:["Positive self-regard and positive regard for others","Low self-regard and positive regard for others","Positive self-regard and low regard for others","Low regard for both self and others"]},
-  {q:"Which strategy improves self-esteem by redefining events from another point of view?", a:["Visualization","Self-talk","Reframing","Comparison"]},
-  {q:"Visualization helps self-esteem by:", a:["Ignoring reality","Imagining successful performance of tasks","Comparing with others","Focusing on past mistakes"]},
-  {q:"The need to give and receive love and warmth is called:", a:["Inclusion","Affection","Control","Support"]},
-  {q:"In the Johari Window, information known to self but unknown to others is in the:", a:["Open area","Hidden area","Blind area","Unknown area"]},
-  {q:"Which social style dimension reflects sensitivity to others’ needs?", a:["Assertiveness","Responsiveness","Aggressiveness","Dominance"]},
-  {q:"Which of the following can negatively affect communication?", a:["High self-esteem","Mindfulness","Low self-esteem","Secure attachment"]},
-  {q:"Developing honest relationships primarily helps by:", a:["Increasing dependence on others","Providing objective reflection to improve self-image","Avoiding negative feedback","Eliminating self-awareness"]}
+{q:"Which hormone class mobilizes the body for long-term stress?", a:["Mineralocorticoids","Gonadocorticoids","Glucocorticoids","Catecholamines"]},
+{q:"Aldosterone primarily promotes:", a:["Sodium reabsorption and potassium secretion","Protein synthesis","Glucose uptake","Insulin release"]},
+{q:"The prototype corticosteroid for adrenocortical insufficiency is:", a:["Prednisone","Hydrocortisone","Dexamethasone","Fludrocortisone"]},
+{q:"Which adverse effect is most likely with long-term corticosteroid therapy?", a:["Cushing syndrome","Hypoglycemia","Bradycardia","Anemia"]},
+{q:"Nurses should monitor which laboratory values during corticosteroid therapy?", a:["Potassium, T3, T4, and glucose","Calcium only","Platelets only","Urea only"]},
+{q:"A patient on hydrocortisone develops hypertension and edema. The nurse interprets this as:", a:["Sodium and fluid retention","Adrenal crisis","Drug allergy","Hypokalemia resolution"]},
+{q:"Which symptom may indicate onset of Cushing syndrome?", a:["Facial roundness and weight gain","Muscle cramps","Cold intolerance","Dry skin"]},
+{q:"What is a key nursing consideration for patients on long-term glucocorticoids?", a:["Monitor for osteoporosis","Avoid weight checks","Limit vitamin D","Encourage fasting"]},
+{q:"Corticosteroids may cause:", a:["Mood changes and insomnia","Hypotension","Dehydration","Hypoglycemia"]},
+{q:"Corticosteroids are contraindicated in:", a:["Systemic fungal infections","Asthma","Rheumatoid arthritis","Allergies"]},
+{q:"Which hormone decreases blood glucose levels?", a:["Insulin","Glucagon","Epinephrine","Cortisol"]},
+{q:"Type 1 diabetes results from:", a:["Autoimmune destruction of β cells","Insulin resistance","Pancreatic tumor","Obesity"]},
+{q:"Untreated type 1 DM may cause:", a:["Cardiovascular and nervous system damage","Renal failure only","Obesity","Anemia"]},
+{q:"Type 2 DM is characterized by:", a:["Insulin resistance","Absolute insulin deficiency","Autoimmune attack","Lack of glucagon"]},
+{q:"Regular human insulin belongs to which pharmacologic class?", a:["Short-acting hypoglycemic drug","Intermediate","Long-acting","Rapid-acting only"]},
+{q:"Onset of regular insulin (subcutaneous) is approximately:", a:["30–60 minutes","2 hours","15 minutes","4 hours"]},
+{q:"Regular insulin’s peak effect occurs at:", a:["4–12 hours","1 hour","12 hours","24 hours"]},
+{q:"The most common adverse effect of insulin therapy is:", a:["Hypoglycemia","Hyperkalemia","Acidosis","Constipation"]},
+{q:"Signs of hypoglycemia include:", a:["Tachycardia, confusion, sweating","Bradycardia and cold skin","Hypertension","Nausea only"]},
+{q:"Insulin injections should be administered:", a:["30 minutes before meals","Immediately after meals","While fasting","At bedtime only"]},
+{q:"Only regular insulin may be given by:", a:["Intravenous route","Inhalation","IM only","Oral route"]},
+{q:"Alcohol use during insulin therapy may cause:", a:["Hypoglycemia","Hyperglycemia","Weight loss","Hypertension"]},
+{q:"Which drug class is first-line therapy for type 2 DM?", a:["Biguanides","Sulfonylureas","Thiazolidinediones","Alpha-glucosidase inhibitors"]},
+{q:"Metformin primarily acts by:", a:["Decreasing hepatic glucose production","Increasing insulin release","Blocking α-receptors","Enhancing glucagon"]},
+{q:"A major advantage of metformin compared with sulfonylureas is:", a:["It does not cause hypoglycemia","It stimulates insulin secretion","It causes weight gain","It is for type 1 DM"]},
+{q:"The most common adverse effects of metformin are:", a:["GI disturbances (nausea, diarrhea)","Hypoglycemia","Hypertension","Rash"]},
+{q:"Metformin should be discontinued before and after radiographic contrast because of risk for:", a:["Lactic acidosis","Hypertension","Hypoglycemia","Dehydration"]},
+{q:"Which combination increases risk of lactic acidosis with metformin?", a:["Alcohol consumption","Caffeine","Antacids","Iron supplements"]},
+{q:"Which supplement’s absorption is reduced by metformin?", a:["Vitamin B12 and folic acid","Vitamin D","Calcium","Zinc"]},
+{q:"A patient overdoses on insulin. The preferred emergency treatment is:", a:["IV glucose or glucagon","Normal saline","Insulin infusion","Corticosteroids"]}
 ];
 
-/* ابني امتحان 50 سؤال بلا تكرار متتالي */
-function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
-function buildExam(bank,total=50){
-  const out=[]; let prev=null;
-  while(out.length<total){
-    const cycle=shuffle(bank.slice());
-    for(const item of cycle){
-      if(out.length>=total) break;
-      if(prev && prev.q===item.q) continue;
-      out.push({...item}); prev=item;
-    }
-  }
-  return out.slice(0,total);
-}
-const questionsRaw = buildExam(bank,50);
+const state = { itemsAnswered:0, totalQuestions:bank.length, timeUsed:0, timeTotal:120 };
 
-/* الحالة العامة */
-const state = { itemsAnswered:0, totalQuestions:questionsRaw.length, timeUsed:0, timeTotal:120 };
-
-/* خرّج بنية العرض */
-const questions = questionsRaw.map((it,i)=>({
-  id:i+1, text:it.q, options: it.a.slice(), answer:null, flagged:false, skipped:false
-}));
-
-/* عناصر DOM */
 const $ = s=>document.querySelector(s);
 const setBar=(el,p,aria)=>{el.style.width=p+"%"; if(aria) aria.setAttribute("aria-valuenow",Math.round(p));};
 const pct=n=>`${Math.max(0,Math.min(100,Math.round(n)))}%`;
 
-/* لوحات التقدم */
+/* build question models */
+const questions = bank.map((it,i)=>({ id:i+1, text:it.q, options:it.a.slice(), answer:null, flagged:false }));
+
+/* progress UI */
 function updateOverview(){
   $("#itemsLabel").textContent=` ${state.itemsAnswered} / ${state.totalQuestions}`;
   const itemsPct=(state.itemsAnswered/state.totalQuestions)*100;
@@ -263,13 +264,12 @@ function updateOverview(){
   setBar($("#modeBar"),itemsPct,$("#modeBar").parentElement);
 }
 
-/* الشريط الجانبي */
+/* sidebar */
 const side=$("#sidebar");
 function sidebarClass(q,i,active){
   let cls="idx";
   if(q.flagged) cls+=" flag";
   if(q.answer!==null) cls+=" answered";
-  if(q.skipped) cls+=" skip";
   if(i===active) cls+=" active";
   return cls;
 }
@@ -278,13 +278,12 @@ function renderSidebar(active){
   questions.forEach((q,i)=>{
     const b=document.createElement("button");
     b.type="button"; b.className=sidebarClass(q,i,active);
-    b.textContent=q.id;
-    b.onclick=()=>go(i);
+    b.textContent=q.id; b.onclick=()=>go(i);
     side.appendChild(b);
   });
 }
 
-/* عرض السؤال */
+/* question render */
 let idx=0;
 const qTitle=$("#qTitle"), qText=$("#qText"), opts=$("#opts");
 function renderQuestion(){
@@ -292,7 +291,6 @@ function renderQuestion(){
   qTitle.innerHTML=`<span class="blue">Q.${q.id}</span>`;
   qText.textContent=q.text;
   opts.innerHTML="";
-
   q.options.forEach((label,i)=>{
     const row=document.createElement("label");
     row.className="opt"+(q.answer===i?" selected":"");
@@ -308,7 +306,6 @@ function renderQuestion(){
     row.appendChild(document.createTextNode(label));
     opts.appendChild(row);
   });
-
   $("#btnPrev").disabled = idx===0;
   const next=$("#btnNext");
   const last=idx===questions.length-1;
@@ -324,23 +321,30 @@ function updateAnswered(){
   updateOverview();
 }
 
-/* تنقل */
+/* nav */
 function go(i){ idx=i; renderQuestion(); }
 $("#btnPrev").onclick=()=>{ if(idx>0){ idx--; renderQuestion(); } };
 $("#btnNext").onclick=()=>{ if(idx<questions.length-1){ idx++; renderQuestion(); } else alert("Exam ended (visual only)."); };
 $("#btnFlag").onclick=()=>{ const q=questions[idx]; q.flagged=!q.flagged; renderQuestion(); };
 
-/* المؤقت (صعودًا حتى 120 دقيقة) ويحدّث النص في أعلى اليمين */
+/* timer: top right shows remaining minutes; row shows elapsed */
 const start=Date.now();
 setInterval(()=>{
   state.timeUsed=Math.min(state.timeTotal,(Date.now()-start)/60000);
-  $("#timerText").textContent=`${120 - Math.floor(state.timeUsed)} (mins)`;
+  const remain = Math.max(0, state.timeTotal - Math.floor(state.timeUsed));
+  $("#timerText").textContent = `${remain} (mins)`;
   updateOverview();
 },1000);
 
-/* تشغيل أولي */
-updateOverview(); renderSidebar(idx); renderQuestion();
+/* Text size controls */
+const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+let scale=1;
+const setScale=()=>{ document.documentElement.style.setProperty('--qscale', scale); };
+$("#inc").onclick=()=>{ scale=clamp(scale+0.1,0.85,1.6); setScale(); };
+$("#dec").onclick=()=>{ scale=clamp(scale-0.1,0.85,1.6); setScale(); };
+
+/* init */
+updateOverview(); renderSidebar(idx); renderQuestion(); setScale();
 </script>
 </body>
 </html>
-
